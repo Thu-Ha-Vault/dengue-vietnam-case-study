@@ -25,7 +25,7 @@ A pest-control services company (the same plan works for a provincial Center for
 | 8 | **Unusual rain does not predict an unusual season** | rain anomaly vs case anomaly: median ρ 0.00–0.05; temperature anomaly: weak, median 0.10–0.18 (Da Nang 0.33, Khanh Hoa 0.27) |
 | 9 | **Recent seasons run later** | 2024: June 4.8% of cases (usual 9.2%), December 11.7% (usual 7.5%), peak in October |
 
-Charts: [`figures/`](figures/) · full analysis: [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) · slides: [`slides/dengue_case_study.pptx`](slides/dengue_case_study.pptx)
+Charts: [`figures/`](figures/) · full analysis: [`notebooks/analysis.ipynb`](notebooks/analysis.ipynb) · slides: [`slides/dengue_case_study.pptx`](slides/dengue_case_study.pptx) · interactive dashboard: [Tableau Public](https://public.tableau.com/app/profile/ha.nguyen.thi.thu8875/viz/DengueinVietnamseasonprovincesandincidence_/Dashboard1)
 
 ## Top high-level insights
 1. Dengue is a **predictable June–November season** (73% of cases): the calendar alone tells the client when to prepare.
