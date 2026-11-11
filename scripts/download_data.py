@@ -2,11 +2,15 @@
 
 1. OpenDengue V1.3.1 national and spatial extracts (CC BY 4.0), https://opendengue.org
 2. NASA POWER monthly weather (T2M, PRECTOTCORR, RH2M), 1994-2024, one CSV per location in data/raw/weather/
+3. Average population by province, 1995-2010 (General Statistics Office of Vietnam, table V02.03-07, PxWeb API)
+4. Province boundaries, 2008 (geoBoundaries VNM ADM1, simplified GeoJSON, public domain)
 
 Usage: python scripts/download_data.py            (skips files that already exist)
 """
 from __future__ import annotations
 
+import csv
+import json
 import time
 import urllib.request
 import zipfile
@@ -15,6 +19,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 WEATHER = RAW / "weather"
+POPULATION = RAW / "population" / "nso_V02.03-07_population_1995_2010.csv"
+BOUNDARIES = RAW / "boundaries" / "geoBoundaries-VNM-ADM1_simplified.geojson"
+NSO_TABLE = ("https://pxweb.nso.gov.vn/api/v1/vi/D%C3%A2n%20s%E1%BB%91%20v%C3%A0%20lao%20%C4%91%E1%BB%99ng/"
+             "V02.03-07.px")
+GEOBOUNDARIES = ("https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/VNM/ADM1/"
+                 "geoBoundaries-VNM-ADM1_simplified.geojson")
 
 OPENDENGUE = "https://github.com/OpenDengue/master-repo/raw/main/data/releases/V1.3.1/{name}"
 EXTRACTS = ["National_extract_V1_3_1.zip", "Spatial_extract_V1_3_1.zip"]
@@ -64,8 +74,40 @@ def slug(name: str) -> str:
     return name.lower().replace(" - ", "-").replace(" ", "-")
 
 
+def fetch_population() -> None:
+    """Total average population (thousand people) by province and year, 1995-2010, saved as UTF-8 CSV.
+    The JSON response is used because the CSV export loses Vietnamese characters."""
+    if POPULATION.exists():
+        print(f"skip  {POPULATION.relative_to(ROOT)}")
+        return
+    POPULATION.parent.mkdir(parents=True, exist_ok=True)
+    meta = json.load(urllib.request.urlopen(NSO_TABLE, timeout=120))
+    var = {v["code"]: v for v in meta["variables"]}
+    areas = dict(zip(var["Tỉnh, thành phố"]["values"], var["Tỉnh, thành phố"]["valueTexts"]))
+    years = dict(zip(var["Năm"]["values"], var["Năm"]["valueTexts"]))
+    wanted = [c for c, t in years.items() if t.isdigit() and 1995 <= int(t) <= 2010]
+    query = {"query": [
+        {"code": "Tỉnh, thành phố", "selection": {"filter": "all", "values": ["*"]}},
+        {"code": "Dân số trung bình", "selection": {"filter": "item", "values": [var["Dân số trung bình"]["values"][0]]}},
+        {"code": "Năm", "selection": {"filter": "item", "values": wanted}},
+    ], "response": {"format": "json"}}
+    req = urllib.request.Request(NSO_TABLE, data=json.dumps(query).encode(), headers={"Content-Type": "application/json"})
+    data = json.load(urllib.request.urlopen(req, timeout=120))
+    with open(POPULATION, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["area", "year", "population_thousand"])
+        for row in data["data"]:
+            a, _, y = row["key"]
+            v = row["values"][0]
+            w.writerow([areas[a], int(years[y]), "" if v in ("..", "-", "") else v])
+    print(f"saved {POPULATION.relative_to(ROOT)}")
+
+
 def main() -> None:
     WEATHER.mkdir(parents=True, exist_ok=True)
+    BOUNDARIES.parent.mkdir(parents=True, exist_ok=True)
+    fetch_population()
+    fetch(GEOBOUNDARIES, BOUNDARIES)
     for name in EXTRACTS:
         z = RAW / name
         fetch(OPENDENGUE.format(name=name), z)

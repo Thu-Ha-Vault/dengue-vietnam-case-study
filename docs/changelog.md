@@ -17,11 +17,14 @@
 | Weather wide → long, 11 locations × 31 years | 4,092 | precipitation mm/day × days in month → mm/month; lags 1–3 computed on the full weather series |
 | Join cases and weather on province + year + month | 2,191 | inner join, 11 provinces (Da Nang from 1997) |
 | National annual series, one complete total per year | 57 years | annual figure (41), sum of 12 months (15), sum of 52 weeks (1); 2023 (41 weeks) and 2025 (3 months) left out; gaps not filled with 0 |
+| Population: province-years 1995–2010 from the statistics office | 1,024 | average population, thousand people; national and regional totals dropped |
+| Join cases and population, 2004–2010, Ha Tay merged into Ha Noi | 441 | 63 provinces × 7 years on the same boundaries; names matched with an accent-free key |
 
-Outputs: `data/clean/province_month.parquet`, `province_month_weather.csv`, `national_annual.csv`, `tableau_*.csv`.
+Outputs: `data/clean/province_month.parquet`, `province_month_weather.csv`, `national_annual.csv`, `province_year_incidence.csv`, `tableau_*.csv` (including `tableau_incidence.csv` with province centroids for the Tableau map).
 
 ## Decisions
 - Seasonal and regional averages use 1995–2010 (complete national months; 1994 lacks January).
 - Before 1980 the national series is too patchy for a baseline, so outbreak years are defined on 1980–2024 (mean + 2 SD).
 - Spearman correlation is computed as the Pearson correlation of ranks (robust to outbreak spikes); anomalies subtract each province's mean for that calendar month, with cases on a log scale.
 - Weeks are assigned to the month they start in (2016 check only).
+- Incidence is averaged over 2004–2010, the only years in which case counts and population share the same province boundaries.

@@ -1,4 +1,4 @@
-"""Build the dengue case study deck (16:9, 15 slides, ~30 minutes) from the figures in ../figures.
+"""Build the dengue case study deck (16:9, 16 slides, ~30 minutes) from the figures in ../figures.
 
 Usage: .venv/bin/python slides/build_slides.py  ->  slides/dengue_case_study.pptx
 Speaker notes hold the talking points, timing and caveats for each slide.
@@ -99,6 +99,7 @@ s = slide("Data: 64 provinces × 17 years of monthly cases, plus weather for 11 
 text(s, 0.6, 1.9, 6.3, 4.8, [
     "OpenDengue V1.3.1 (CC BY 4.0): 12,273 province-months, 1994-02 → 2010-12, 1.38 million reported cases; national series 1960–2024.",
     "NASA POWER: monthly rainfall, temperature and humidity, 1994–2024, at 11 provincial capitals in four regions.",
+    "Population by province (statistics office) for incidence; province boundaries from geoBoundaries.",
     "Checks: no negative, missing or duplicate province-months; provinces sum exactly to the national monthly figures.",
 ], size=19)
 text(s, 7.2, 1.9, 5.6, 4.8, [
@@ -106,7 +107,7 @@ text(s, 7.2, 1.9, 5.6, 4.8, [
     "• Province data ends in 2010",
     "• Reported cases < real infections",
     "• One weather point per province",
-    "• Counts, not incidence (no population)",
+    "• Incidence for 2004–2010 only",
     "• Correlation is not causation",
 ], size=19, color=SOFT)
 
@@ -121,7 +122,7 @@ text(s, 0.6, 1.9, 12, 4.8, [
     "National annual series: one complete total per year (57 years), no double counting, gaps left empty.",
 ], size=21)
 
-# 6–12. Findings (12 min)
+# 6–13. Findings (13 min)
 findings = [
     ("01_national_trend.png", "Finding 1", "Outbreak years reach 4–5× a typical year, and the typical year has doubled",
      "Median year 51k (1980–1999), 63k (2000–2009), 109k (2010–2024). Outbreak years above mean + 2 SD: 1987, 2019, 2022. "
@@ -132,16 +133,20 @@ findings = [
     ("04_top_provinces.png", "Finding 3", "The South carries 68% of cases; ten provinces carry 54%",
      "Ho Chi Minh City averages 7,105 cases a year, then the Mekong Delta. Binh Thuan and Khanh Hoa lead the Central coast. "
      "Counts, not incidence: small provinces with high risk can hide here."),
-    ("03_region_profiles.png", "Finding 4", "Regions are staggered: August peaks in the South, October in the North",
+    ("08_incidence_map.png", "Finding 4", "Per person, the Mekong Delta carries the highest risk",
+     "Incidence 2004–2010 with provincial population: Vietnam 108.5 per 100,000 a year, Mekong Delta 276.8 (2.6×). "
+     "Ca Mau, Tien Giang, Soc Trang, Dong Thap at 375–395. Ho Chi Minh City is #1 by cases but #17 per person. "
+     "Khanh Hoa is the only province outside the South at twice the national rate. Islands of Hoang Sa and Truong Sa marked."),
+    ("03_region_profiles.png", "Finding 5", "Regions are staggered: August peaks in the South, October in the North",
      "Highlands and South climb fastest (by July) and peak in August; the Central coast has a July hump and peaks in October; "
      "the North climbs from August and has half of its cases in September–November. Ha Noi 2009: 16,175 cases."),
-    ("05_weather_lead.png", "Finding 5", "Weather runs ahead of the season",
+    ("05_weather_lead.png", "Finding 6", "Weather runs ahead of the season",
      "Rain leads cases by about a month in the Mekong Delta (An Giang 0.58). Temperature leads by 2–3 months in the North "
      "and Centre (Ha Noi 0.52, Da Nang 0.62). This mostly reflects the shared seasonal cycle."),
-    ("06_weather_anomaly.png", "Finding 6", "But a wetter-than-usual month does not predict a worse season",
+    ("06_weather_anomaly.png", "Finding 7", "But a wetter-than-usual month does not predict a worse season",
      "After removing the normal seasonal pattern, rain anomalies are unrelated to case anomalies (median ρ ~0). "
      "Warmer-than-usual months give a weak signal, clearest on the Central coast. So: plan by calendar, not by rain forecast."),
-    ("07_recent_season_2024.png", "Finding 7", "Recent seasons run later: 2024 stayed high into December",
+    ("07_recent_season_2024.png", "Finding 8", "Recent seasons run later: 2024 stayed high into December",
      "2024 (WHO national monthly figures): June 4.8% of cases vs 9.2% before; December 11.7% vs 7.5%; peak in October. "
      "One year only, but it matches 2016. Keep crews until December."),
 ]
@@ -149,35 +154,35 @@ for fig_name, kicker, title, note in findings:
     s = slide(title, notes="~1.7 min. " + note, kicker=kicker)
     figure(s, fig_name)
 
-# 13. Top insights (2 min)
+# 14. Top insights (2 min)
 s = slide("Top insights", kicker="Conclusion",
           notes="2 min. One sentence each, with the number.")
 text(s, 0.6, 1.9, 12, 5, [
     "1. A predictable June–November season (73% of cases): the calendar tells you when to prepare.",
-    "2. Where matters more than when: the South has 68% of cases, ten provinces 54%.",
+    "2. Where matters more than when: the South has 68% of cases; per person the Mekong Delta runs at 2.6× the national rate.",
     "3. Regions are staggered: August peaks in the South and Highlands, October on the Central coast and in the North.",
     "4. Weather confirms timing but does not forecast severity; bad years (4–5×) need surge capacity.",
     "5. The baseline doubled since the 1990s, and the 2024 season ran later, into December.",
 ], size=21)
 
-# 14. Recommendations (2 min)
+# 15. Recommendations (2 min)
 s = slide("Recommendations: a regional preparation calendar", kicker="Act",
           notes="2 min. Tie each recommendation to findings. Mention costs: earlier stocking vs emergency purchases.")
 text(s, 0.6, 1.9, 12, 5, [
-    "1. Ready by May in the South, Central Highlands and Central coast; ready by July in the North; crews on until December (findings 2, 4, 7).",
-    "2. Allocate by burden: about two thirds of capacity to the South (HCMC, Mekong Delta), a quarter to the Central coast "
-    "(Binh Thuan, Khanh Hoa), a flexible reserve for the North (findings 3, 4).",
+    "1. Ready by May in the South, Central Highlands and Central coast; ready by July in the North; crews on until December (findings 2, 5, 8).",
+    "2. Allocate by burden two ways: crews by case counts (two thirds South, a quarter Central coast); larval-control intensity "
+    "by incidence, highest in Ca Mau, Tien Giang, Soc Trang, Dong Thap, Ben Tre, Khanh Hoa; a reserve for the North (findings 3–5).",
     "3. Use the onset of rains (May–June) as the trigger for larval-control campaigns in the South; sign a surge contract "
-    "for outbreak years instead of scaling with rainfall (findings 1, 5, 6).",
+    "for outbreak years instead of scaling with rainfall (findings 1, 6, 7).",
 ], size=21)
 
-# 15. Further work (1 min) + Q&A
+# 16. Further work (1 min) + Q&A
 s = slide("Next deliverables, then questions", kicker="Further work",
-          notes="1 min, then Q&A for the rest of the 30 minutes. Likely questions: why data ends in 2010; why counts not incidence; "
+          notes="1 min, then Q&A for the rest of the 30 minutes. Likely questions: why data ends in 2010; why incidence only for 2004–2010; "
                 "how strong is ρ 0.5; what about the 2025 province merger.")
 text(s, 0.6, 1.9, 12, 5, [
-    "Incidence per 100,000 with provincial population.",
-    "Province data after 2010, mapped to the 34 provinces created in 2025.",
+    "Province data after 2010, mapped to the 34 provinces created in 2025, to update incidence.",
+    "District-level cases inside Ho Chi Minh City and the Mekong Delta to find hotspots.",
     "Early-warning model: lagged cases + temperature anomalies + El Niño, tested on held-out years.",
     "Mosquito indices (Breteau, House index) and district-level cases from the client.",
     "A monthly Tableau dashboard refreshed with new national figures.",

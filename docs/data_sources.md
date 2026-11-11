@@ -34,6 +34,21 @@ Raw files live in `data/raw/` (not committed). Re-create them with `python scrip
 | Quality | no missing values (`-999`) in the period |
 | License | free and open, no key needed. Acknowledgement: "These data were obtained from the NASA Langley Research Center (LaRC) POWER Project funded through the NASA Earth Science/Applied Science Program." https://power.larc.nasa.gov |
 
+## 3. Population: General Statistics Office of Vietnam
+| Item | Detail |
+| --- | --- |
+| Dataset | Table V02.03-07 "Dân số trung bình phân theo địa phương" (average population by province), total, 1995–2010, thousand people |
+| Access | PxWeb API: https://pxweb.nso.gov.vn/api/v1/vi/ (database "Dân số và lao động"); the JSON response is used because the CSV export loses Vietnamese characters |
+| Boundaries | population follows the boundaries of each year for the 2004 splits (Dak Nong, Hau Giang, Dien Bien) and Ha Tay until 2007; the 1997 splits are back-cast to the new provinces, so incidence is computed for **2004–2010** only, with Ha Tay added to Ha Noi |
+| Use | incidence = cases / population × 100,000 for 63 provinces × 7 years |
+
+## 4. Province boundaries: geoBoundaries
+| Item | Detail |
+| --- | --- |
+| Dataset | geoBoundaries VNM ADM1 (2008 boundaries, 63 provinces plus Con Dao), simplified GeoJSON, commit 9469f09 |
+| License | public domain (geoBoundaries, sourced from Wikipedia) |
+| Use | choropleth map and province centroids (lat/lon) for the Tableau map. The file has no offshore archipelagos, so the Hoang Sa (Da Nang) and Truong Sa (Khanh Hoa) islands are marked on the map by hand. |
+
 ## ROCCC
 - **Reliable:** case counts are curated by OpenDengue (peer-reviewed data paper) from official surveillance reports digitised by Project Tycho; weather is a standard NASA reanalysis product.
 - **Original:** secondary data. OpenDengue keeps the source id (`UUID`) for every row, so each figure traces back to its original report.
@@ -46,4 +61,4 @@ Raw files live in `data/raw/` (not committed). Re-create them with `python scrip
 - Province boundaries are those of 1994–2010. Vietnam merged Ha Tay into Hanoi in 2008 and reorganised 63 provinces into 34 in 2025, so mapping results to today's provinces needs a crosswalk.
 - Weather at one point (the provincial capital) stands in for a whole province.
 - Correlation between weather and cases does not prove causation: urbanisation, water storage habits, population immunity, circulating serotypes and control campaigns also matter.
-- No population data yet, so the province ranking uses case counts until incidence is added (planned source: General Statistics Office of Vietnam, 2009 census).
+- Incidence covers 2004–2010 only (consistent boundaries); earlier years are compared by counts.
