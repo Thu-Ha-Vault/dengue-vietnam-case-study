@@ -8,12 +8,20 @@
 | Vietnam, national level, all resolutions | 317 | yearly 1960–2022 (gaps), monthly 1995–2012 and 2024–2025, weekly 2016 and 2023 |
 | Downloaded NASA POWER monthly weather, 11 provincial capitals, 1994–2024 | 11 files × 3 variables × 31 years | no `-999` values |
 
-## Process (from 2026-11-22)
-| Date | Step | Rows before | Rows after | Note |
-| --- | --- | ---: | ---: | --- |
-| | Keep Vietnam province-month rows; parse `calendar_start_date` to `month` | | | |
-| | Add region (North, Central coast, Central Highlands, South) to each province | | | |
-| | Reshape weather from wide to long; precipitation mm/day → mm/month | | | |
-| | Join cases and weather on province + year + month; add lags 1–3 | | | |
-| | National annual series: combine yearly, monthly and weekly sources without double counting | | | |
-| | … | | | |
+## Process (2026-11-11, notebook §3)
+| Step | Rows | Note |
+| --- | ---: | --- |
+| Vietnam province-month rows (raw) | 12,273 | `data/clean/vn_province_month_raw.parquet` (0.1 MB extract of the 503 MB spatial CSV) |
+| Parse `calendar_start_date` → `date`, `month`; add region | 12,273 | no rows removed; every province maps to one of 4 regions (`scripts/regions.py`) |
+| Rows in complete province-years (used for yearly averages) | 11,640 | 1994 lacks January; provinces created in 1997/2004 start mid-period; Ha Tay ends in 2007 |
+| Weather wide → long, 11 locations × 31 years | 4,092 | precipitation mm/day × days in month → mm/month; lags 1–3 computed on the full weather series |
+| Join cases and weather on province + year + month | 2,191 | inner join, 11 provinces (Da Nang from 1997) |
+| National annual series, one complete total per year | 57 years | annual figure (41), sum of 12 months (15), sum of 52 weeks (1); 2023 (41 weeks) and 2025 (3 months) left out; gaps not filled with 0 |
+
+Outputs: `data/clean/province_month.parquet`, `province_month_weather.csv`, `national_annual.csv`, `tableau_*.csv`.
+
+## Decisions
+- Seasonal and regional averages use 1995–2010 (complete national months; 1994 lacks January).
+- Before 1980 the national series is too patchy for a baseline, so outbreak years are defined on 1980–2024 (mean + 2 SD).
+- Spearman correlation is computed as the Pearson correlation of ranks (robust to outbreak spikes); anomalies subtract each province's mean for that calendar month, with cases on a log scale.
+- Weeks are assigned to the month they start in (2016 check only).
